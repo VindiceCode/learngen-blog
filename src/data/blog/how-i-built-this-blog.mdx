@@ -1,0 +1,113 @@
+---
+title: "How I Built This Blog"
+description: "Building a blog with Claude Code, git worktrees, and parallel agents - shipping 6 features in one session."
+pubDate: 2025-01-14
+tags: ["meta", "claude-code", "astro", "workflow"]
+draft: false
+---
+
+I built this blog in a single Claude Code session. Not just the basic structure - the full feature set: search, tags, RSS, reading time, table of contents, and related posts. Here's how.
+
+## The Stack
+
+- **Astro 5** with MDX for content
+- **Tailwind CSS v4** via Vite plugin
+- **Vercel** for deployment
+- **Claude Code** as the AI pair programmer
+
+Nothing fancy. Astro is fast, MDX lets me embed components if needed, Tailwind handles styling without fighting CSS. Dark mode by default because I'm not an animal.
+
+## The Workflow That Made It Fast
+
+The real story isn't the tech - it's the workflow. Instead of building features one at a time, we used **git worktrees** and **parallel Claude Code agents**.
+
+### Git Worktrees
+
+A worktree lets you have multiple working directories for the same repo, each on a different branch. Instead of:
+
+```bash
+git checkout feature/search
+# work on search
+git checkout feature/rss
+# work on rss
+```
+
+You get:
+
+```
+learngenblog/              # main branch
+learngenblog-worktrees/
+  ├── pagefind-search/     # feature/pagefind-search branch
+  ├── rss-feed/            # feature/rss-feed branch
+  └── table-of-contents/   # feature/table-of-contents branch
+```
+
+Each directory is a full checkout. You can run dev servers, make changes, commit - all independently.
+
+### Parallel Agents
+
+Here's where it gets interesting. Claude Code can spawn background agents - separate AI instances that work autonomously on tasks. Each agent gets its own context, so they don't pollute each other.
+
+We created 7 GitHub issues for features, then spawned agents to work on them in parallel:
+
+```
+Agent 1 → worktree/reading-time → implements #3
+Agent 2 → worktree/rss-feed → implements #5
+Agent 3 → worktree/table-of-contents → implements #6
+```
+
+Three features building simultaneously. When they finished, we reviewed the commits, tested locally, and created PRs.
+
+## The Features
+
+### Reading Time (#3)
+
+Simple utility that estimates reading time based on word count. Shows "X min read" next to dates on posts and the home page.
+
+### RSS Feed (#5)
+
+Standard RSS at `/rss.xml` using `@astrojs/rss`. Link in the header for feed readers.
+
+### Table of Contents (#6)
+
+Auto-generated from post headings. Only shows when there are 2+ headings. Links scroll smoothly to each section.
+
+### Pagefind Search (#1)
+
+Static search powered by [Pagefind](https://pagefind.app/). Press `Cmd/Ctrl+K` to open the search modal. Index generates at build time, so it's fast and works without a server.
+
+### Tags (#2)
+
+Every post has tags. Click a tag to see all posts with that tag. The `/tags` page shows all tags with post counts.
+
+### Related Posts (#4)
+
+At the bottom of each post, shows 2-3 related posts based on shared tags. Falls back to recent posts if there aren't enough tag matches.
+
+## The Process
+
+1. **Plan first**: Created GitHub issues for each feature before writing code
+2. **Set up worktrees**: One branch per feature, isolated working directories
+3. **Spawn agents**: Parallel execution, each agent focused on one feature
+4. **Review & test**: Checked each worktree locally before merging
+5. **Rebase & merge**: Resolved conflicts, squash-merged PRs in order
+
+The whole thing - from empty repo to deployed blog with 6 features - took one session.
+
+## What I Learned
+
+**Git worktrees are underrated.** I'd used them before but never this aggressively. Having separate directories for each feature makes context-switching trivial.
+
+**Parallel agents need clear boundaries.** Each agent needs a specific directory and task. When the boundaries weren't clear, agents created files in the wrong worktrees. Explicit paths in prompts fix this.
+
+**Conflicts happen.** When you're building features in parallel that touch the same files (like `PostLayout.astro`), you'll hit merge conflicts. The rebase workflow handles this, but you need to understand the changes to resolve correctly.
+
+**Claude Code + worktrees = multiplier.** A human couldn't effectively work on 3 features simultaneously. But agents can. The worktree pattern makes this possible without conflicts during development.
+
+## What's Next
+
+The blog is live. The workflow is documented. Now I need to actually write posts.
+
+There's also an `/interview` skill planned - a Claude Code command that helps extract blog content from raw context (notes, transcripts, ideas). Feed it material, it asks questions, outputs structured notes for drafting posts. That's next.
+
+For now: infrastructure done, time to create.
