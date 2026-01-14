@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).filter(post => !post.data.draft);
+
+// Build a map of tags to post counts
+const tagCounts = new Map<string, number>();
+posts.forEach(post => {
+  post.data.tags.forEach(tag => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+// Sort tags alphabetically
+const sortedTags = [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+---
+
+<BaseLayout title="Tags">
+  <section>
+    <h1 class="text-3xl font-bold mb-2" style="color: var(--color-text);">Tags</h1>
+    <p class="mb-8" style="color: var(--color-text-muted);">
+      Browse posts by topic.
+    </p>
+
+    {sortedTags.length === 0 ? (
+      <p style="color: var(--color-text-muted);">No tags yet.</p>
+    ) : (
+      <div class="flex flex-wrap gap-3">
+        {sortedTags.map(([tag, count]) => (
+          <a
+            href={`/tags/${tag}`}
+            class="tag-link px-3 py-2 rounded-lg text-sm transition-colors"
+            style="background-color: var(--color-code-bg); color: var(--color-text);"
+          >
+            {tag}
+            <span
+              class="ml-2 px-1.5 py-0.5 rounded text-xs"
+              style="background-color: var(--color-border); color: var(--color-text-muted);"
+            >
+              {count}
+            </span>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="mt-12">
+      <a href="/" style="color: var(--color-accent);">← Back to all posts</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .tag-link:hover {
+    background-color: var(--color-border) !important;
+  }
+</style>

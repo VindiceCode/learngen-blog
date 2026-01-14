@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')).filter(post => !post.data.draft);
+
+  // Get all unique tags
+  const tags = new Set<string>();
+  posts.forEach(post => {
+    post.data.tags.forEach(tag => tags.add(tag));
+  });
+
+  // Create a path for each tag
+  return [...tags].map(tag => ({
+    params: { tag },
+    props: {
+      posts: posts
+        .filter(post => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`Posts tagged "${tag}"`}>
+  <section>
+    <h1 class="text-3xl font-bold mb-2" style="color: var(--color-text);">
+      Posts tagged "<span style="color: var(--color-accent);">{tag}</span>"
+    </h1>
+    <p class="mb-8" style="color: var(--color-text-muted);">
+      {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+    </p>
+
+    <ul class="space-y-6">
+      {posts.map((post) => (
+        <li>
+          <a href={`/posts/${post.id}`} class="block group">
+            <h3 class="text-lg font-medium group-hover:underline" style="color: var(--color-accent);">
+              {post.data.title}
+            </h3>
+            <p class="text-sm mt-1" style="color: var(--color-text-muted);">
+              {post.data.description}
+            </p>
+            <time
+              class="text-xs mt-2 block"
+              datetime={post.data.pubDate.toISOString()}
+              style="color: var(--color-text-muted);"
+            >
+              {post.data.pubDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-12 flex gap-4">
+      <a href="/tags" style="color: var(--color-accent);">← All tags</a>
+      <span style="color: var(--color-text-muted);">|</span>
+      <a href="/" style="color: var(--color-accent);">Home</a>
+    </div>
+  </section>
+</BaseLayout>
