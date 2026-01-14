@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Home">
+  <section>
+    <h1 class="text-3xl font-bold mb-2" style="color: var(--color-text);">LearnGen</h1>
+    <p class="mb-8" style="color: var(--color-text-muted);">
+      Building and learning in public.
+    </p>
+
+    <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text);">Posts</h2>
+
+    {posts.length === 0 ? (
+      <p style="color: var(--color-text-muted);">No posts yet. Check back soon.</p>
+    ) : (
+      <ul class="space-y-6">
+        {posts.map((post) => (
+          <li>
+            <a href={`/posts/${post.id}`} class="block group">
+              <h3 class="text-lg font-medium group-hover:underline" style="color: var(--color-accent);">
+                {post.data.title}
+              </h3>
+              <p class="text-sm mt-1" style="color: var(--color-text-muted);">
+                {post.data.description}
+              </p>
+              <time
+                class="text-xs mt-2 block"
+                datetime={post.data.pubDate.toISOString()}
+                style="color: var(--color-text-muted);"
+              >
+                {post.data.pubDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseLayout>
