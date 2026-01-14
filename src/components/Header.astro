@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import Search from './Search.astro';
 ---
 
 <header class="py-6" style="border-bottom: 1px solid var(--color-border);">
@@ -11,6 +12,7 @@ import ThemeToggle from './ThemeToggle.astro';
       <a href="/" class="text-sm hover:underline" style="color: var(--color-text-muted);">Posts</a>
       <a href="/about" class="text-sm hover:underline" style="color: var(--color-text-muted);">About</a>
       <a href="/rss.xml" class="text-sm hover:underline" style="color: var(--color-text-muted);">RSS</a>
+      <Search />
       <ThemeToggle />
     </nav>
   </div>
