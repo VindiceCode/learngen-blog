@@ -37,7 +37,7 @@ Posts in `src/data/blog/` as MDX:
 ---
 title: "Post Title"
 description: "Short description"
-pubDate: 2025-01-13
+pubDate: 2026-01-13
 tags: ["tag1", "tag2"]
 draft: false
 ---
