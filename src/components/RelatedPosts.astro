@@ -1,0 +1,66 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  currentPost: CollectionEntry<'blog'>;
+  allPosts: CollectionEntry<'blog'>[];
+  maxPosts?: number;
+}
+
+const { currentPost, allPosts, maxPosts = 3 } = Astro.props;
+
+// Filter out draft posts and current post
+const availablePosts = allPosts.filter(
+  (post) => !post.data.draft && post.id !== currentPost.id
+);
+
+// Find posts with matching tags
+const currentTags = currentPost.data.tags || [];
+const postsWithMatchingTags = availablePosts
+  .map((post) => {
+    const matchingTags = (post.data.tags || []).filter((tag) =>
+      currentTags.includes(tag)
+    );
+    return { post, matchCount: matchingTags.length };
+  })
+  .filter(({ matchCount }) => matchCount > 0)
+  .sort((a, b) => b.matchCount - a.matchCount)
+  .slice(0, maxPosts)
+  .map(({ post }) => post);
+
+// Fall back to recent posts if no tag matches
+const relatedPosts =
+  postsWithMatchingTags.length >= 2
+    ? postsWithMatchingTags
+    : availablePosts
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+        .slice(0, maxPosts);
+
+// Don't render if no related posts
+const hasRelatedPosts = relatedPosts.length > 0;
+---
+
+{hasRelatedPosts && (
+  <aside class="related-posts mt-12 pt-8" style="border-top: 1px solid var(--color-border);">
+    <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text);">
+      Related Posts
+    </h2>
+    <ul class="space-y-4">
+      {relatedPosts.map((post) => (
+        <li>
+          <a href={`/posts/${post.id}`} class="block group">
+            <h3
+              class="text-base font-medium group-hover:underline"
+              style="color: var(--color-accent);"
+            >
+              {post.data.title}
+            </h3>
+            <p class="text-sm mt-1" style="color: var(--color-text-muted);">
+              {post.data.description}
+            </p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
