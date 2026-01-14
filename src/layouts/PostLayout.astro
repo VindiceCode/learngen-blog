@@ -1,12 +1,20 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 import type { CollectionEntry } from 'astro:content';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
 interface Props {
   post: CollectionEntry<'blog'>;
+  headings: Heading[];
 }
 
-const { post } = Astro.props;
+const { post, headings } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
 
 const formattedDate = pubDate.toLocaleDateString('en-US', {
@@ -45,6 +53,8 @@ const formattedUpdated = updatedDate?.toLocaleDateString('en-US', {
         </div>
       )}
     </header>
+
+    <TableOfContents headings={headings} />
 
     <div class="prose prose-lg max-w-none">
       <slot />
