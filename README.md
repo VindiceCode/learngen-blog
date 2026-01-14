@@ -1,35 +1,37 @@
 # LearnGen Blog
 
-Personal blog at [learngen.io](https://learngen.io) - building and learning in public.
+Personal blog at [learngen.io](https://learngen.io)
 
 ## Stack
 
-- **Framework:** [Astro](https://astro.build) 5 with MDX
-- **Styling:** Tailwind CSS v4
-- **Deployment:** Vercel
+- Astro 5 + MDX
+- Tailwind CSS v4
+- Pagefind (static search)
+- Vercel
 
 ## Development
 
 ```bash
 npm install
-npm run dev
+npm run dev        # dev server (search unavailable)
+npm run build      # build + pagefind index
+npm run preview    # serve built site (search works)
 ```
 
 ## Features
 
-- [x] Dark mode with system preference detection
-- [x] MDX content collection
-- [x] SEO basics (OpenGraph, sitemap)
-- [ ] Pagefind search
-- [ ] Tags filtering
-- [ ] Reading time
-- [ ] Related posts
-- [ ] RSS feed
-- [ ] Table of contents
+- Dark mode (system preference + toggle)
+- Pagefind search (`Cmd+K`)
+- Tags filtering (`/tags`, `/tags/[tag]`)
+- Reading time on posts
+- Related posts (tag-based matching)
+- RSS feed (`/rss.xml`)
+- Table of contents (auto-generated from headings)
+- SEO (OpenGraph, sitemap)
 
 ## Content
 
-Blog posts live in `src/data/blog/` as MDX files with frontmatter:
+Posts in `src/data/blog/` as MDX:
 
 ```yaml
 ---
@@ -39,6 +41,18 @@ pubDate: 2025-01-13
 tags: ["tag1", "tag2"]
 draft: false
 ---
+```
+
+## Structure
+
+```
+src/
+├── components/     # Header, Footer, Search, TOC, RelatedPosts
+├── data/blog/      # MDX posts
+├── layouts/        # BaseLayout, PostLayout
+├── pages/          # Routes (index, about, tags, posts)
+├── styles/         # Global CSS + dark mode vars
+└── utils/          # Reading time calculation
 ```
 
 ## License
