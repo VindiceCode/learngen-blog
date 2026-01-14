@@ -31,3 +31,6 @@ public/pagefind/
 # Local Netlify folder
 .netlify/
 node_modules
+
+# Session notes (personal working files)
+.claude/sessionnotes/
