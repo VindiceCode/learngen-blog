@@ -55,6 +55,35 @@ src/
 └── utils/          # Reading time calculation
 ```
 
+## Claude Code Workflows
+
+This project includes custom Claude Code skills for content creation:
+
+### `/interview` Command
+Extract blog content through conversational interview. Captures humanity, not just facts.
+
+```bash
+/interview                           # Start fresh interview
+/interview path/to/transcript.md     # Interview based on source material
+/interview "I want to write about X" # Start with a topic
+```
+
+### `bloginterviewer` Skill
+Auto-invoked for author profile work. Builds comprehensive profile capturing identity, voice, and brand language.
+
+Triggers: "interview me", "my background", "author profile", "writing style", "brand voice"
+
+### Content Pipeline
+
+```
+Interview → src/data/interview-notes/ (private, gitignored)
+         → Review & approve
+         → Promote to src/data/blog/ (public, draft: true)
+         → Publish (draft: false)
+```
+
+Interview notes stay private until promoted to actual drafts.
+
 ## License
 
 MIT

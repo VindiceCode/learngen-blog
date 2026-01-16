@@ -34,3 +34,10 @@ node_modules
 
 # Session notes (personal working files)
 .claude/sessionnotes/
+
+# Interview notes and author drafts (private until promoted)
+src/data/interview-notes/
+src/data/author/
+
+# Local Claude settings
+.claude/settings.local.json
