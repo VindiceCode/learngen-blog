@@ -1,21 +1,42 @@
 ---
-title: "How I Built This Blog"
-description: "Git worktrees, parallel Claude Code agents, and shipping 6 features in one session."
+title: "Build a Blog From Your Terminal with Claude Code"
+description: "Terminal-first roots, agent orchestration, and reducing thought-to-value time."
 pubDate: 2026-01-14
-tags: ["meta", "claude-code", "astro", "workflow"]
+tags: ["building-in-public", "claude-code", "ai-orchestration", "workflow", "git-worktrees"]
 draft: false
 ---
 
-Built this whole blog in one Claude Code session. Search, tags, RSS, reading time, table of contents, related posts - all of it.
+I use <span style="color: var(--color-accent); font-weight: bold;">Claude Code</span>. It's a terminal-based AI coding tool, and this blog started there - describing what I wanted built.
 
-## Stack
+Terminal-first isn't new for me. Back in 2016, writing mortgages on a DOS system, I'd run three conversations at once - one family on the phone, two more in chat - structuring loans, printing docs, running pricing. No hand leaving the keyboard.
 
-- Astro 5 + MDX
-- Tailwind v4
-- Vercel
-- Dark mode because light mode hurts
+So Claude Code felt natural. But on anything complex, I kept hitting the same wall: <span style="color: var(--color-accent); font-weight: bold;">context management</span>. Agents lose focus when context gets too large. They forget earlier decisions.
 
-## The Trick: Worktrees + Parallel Agents
+I needed a system - a way to structure context for agents, manage memory through the filesystem, orchestrate parallel work. So I built one, and this blog was the first test.
+
+I'm not an engineer. I don't write syntax. But I'm good at decomposing problems, and I've been practicing AI orchestration since 2022. I spend more time than I should thinking about agent memory and knowledge graphs. *"What gets documented gets done"* - my older brother taught me that. I wanted a blog to capture the learning.
+
+---
+
+## The Architecture
+
+<div style="background: var(--color-code-bg); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--color-accent); margin: 1.5rem 0;">
+  <strong>My approach:</strong> decompose first, delegate second.
+</div>
+
+I asked Claude Code to research what features make a good blog. It came back with search, RSS, tags, reading time, table of contents, related posts. It asked my thoughts on stack - I picked from the list:
+
+- **Astro 5 + MDX** for content
+- **Tailwind v4** for styling
+- **Vercel** for hosting
+- **Cloudflare** for DNS
+- **Dark mode** because light mode hurts
+
+Then I told Claude Code to use a <span style="color: var(--color-accent); font-weight: bold;">parallel dev worktrees skill</span> I wrote - a skill that creates git worktrees for each feature, spawns subagent sessions in each one, and lets them work in parallel. That's the whole point: I designed the orchestration, Claude executed it.
+
+*(The parallel dev skill isn't in this repo - after this project, I created a personal Claude Code PM workflow repo with even more additions on how I corral non-deterministic models with deterministic tools. But that's for another blog post.)*
+
+### Worktrees + Parallel Agents
 
 Git worktrees let you check out multiple branches simultaneously in separate directories:
 
@@ -27,9 +48,9 @@ learngenblog-worktrees/
   └── table-of-contents/   # feature branch
 ```
 
-Each directory is independent. Run dev servers, make commits, whatever - they don't interfere with each other.
+Each directory is independent. Run dev servers, make commits - they don't interfere.
 
-Claude Code can spawn background agents. Each agent works in its own worktree, on its own feature. Three features building at once:
+Claude Code spawns background agents. Each agent works in its own worktree, on its own feature:
 
 ```
 Agent 1 → reading-time worktree → implements reading time
@@ -37,36 +58,32 @@ Agent 2 → rss-feed worktree → implements RSS
 Agent 3 → table-of-contents worktree → implements TOC
 ```
 
-When they finish, review the commits, test locally, merge.
+When they finish, I review the commits, test locally, merge.
 
-## What Got Built
+<div style="background: var(--color-code-bg); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--color-accent); margin: 1.5rem 0;">
+  <strong>To those wondering:</strong> did I read any of this code? No. It's a blog, and it renders fast. You're looking at it.
+</div>
 
-**Reading time** - word count estimate, shows "X min read" on posts
+Worktrees combat where LLMs are weakest: context management. Each agent gets focused scope. No context bloat.
 
-**RSS** - standard feed at `/rss.xml`
+### Tracking Work Against Issues
 
-**Table of contents** - auto-generated from headings, only shows if 2+ headings exist
+I had the agents open GitHub issues for each feature, track their work against those issues, and close them after I approved the QA.
 
-**Pagefind search** - `Cmd+K` opens search modal, index builds at compile time
+![Closed GitHub issues for the blog features](/images/github-issues-closed.png)
 
-**Tags** - click a tag, see all posts with that tag
+Repo is [open source](https://github.com/VindiceCode/learngen-blog) - follow the work as it happens.
 
-**Related posts** - matches by shared tags, falls back to recent posts
+---
 
-## Problems
+## The Content
 
-Agents sometimes created files in the wrong worktree. Had to be explicit about paths in prompts.
+Once the app was stood up, I had a blog interviewer agent help me capture the basics. I gave it some assets to read - PDFs, Word docs, markdown files, years of unstructured notes. It created an interview I answered, and that became the foundation for my About page and first posts.
 
-Merge conflicts when multiple features touch the same files. Rebase and resolve manually.
+---
 
-Pagefind search only works after build - shows "unavailable" in dev mode.
+## LearnGen Yourself
 
-## Process
-
-1. Create GitHub issues for each feature
-2. Create worktrees (one per feature)
-3. Spawn agents pointing at each worktree
-4. Review and test each branch locally
-5. Push, create PRs, merge
-
-That's it. Six features, one session.
+<div style="background: var(--color-code-bg); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--color-accent); margin: 1.5rem 0;">
+  Clone the repo. Use the blog interviewer agent to write an About Me and first post. Ask Claude to connect it to Vercel, attach Cloudflare DNS. <strong>You'll be as far as I am.</strong>
+</div>
